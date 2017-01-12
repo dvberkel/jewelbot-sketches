@@ -6,13 +6,17 @@ const unsigned int BREAK = 3;
 const unsigned int LONG_BREAK = 4;
 
 
-const unsigned long MINUTES = 500; // 60 * 1000;
+const unsigned long MINUTES = 60 * 1000;
 const unsigned long TASK_TIME = 25 * MINUTES;
 const unsigned long BREAK_TIME = 5 * MINUTES;
 const unsigned long LONG_BREAK_TIME = 15 * MINUTES;
+const unsigned int  TASKS_BEFORE_LONG_BREAK = 4;
+
+const ColorLabel BREAK_COLOR = RED;
+const ColorLabel LONG_BREAK_COLOR = GREEN;
 
 unsigned int state;
-unsigned checkmarks;
+unsigned completed_tasks;
 unsigned long start_time;
 
 LED led;
@@ -56,11 +60,11 @@ void handle_task(void) {
   unsigned long now = timer.runtime_ms();
   if ((now - start_time) > TASK_TIME) {
     start_time = now;
-    checkmarks += 1;
-    if (checkmarks == 4) {
+    completed_tasks += 1;
+    if (completed_tasks == TASKS_BEFORE_LONG_BREAK) {
       state = LONG_BREAK;
       buzzer.long_buzz();
-      checkmarks = 0;
+      completed_tasks = 0;
     } else {
       state = BREAK;
       buzzer.short_buzz();
@@ -76,7 +80,7 @@ void handle_break(void) {
     start_time = now;
     state = TASK;
   } else {
-    led.turn_on_all(RED);
+    led.turn_on_all(BREAK_COLOR);
   }
 }
 
@@ -86,7 +90,7 @@ void handle_long_break(void) {
     start_time = now;
     state = TASK;
   } else {
-    led.turn_on_all(GREEN);
+    led.turn_on_all(LONG_BREAK_COLOR);
   }
 }
 
@@ -105,6 +109,6 @@ void button_press_long(void) {
 
 void reset(void) {
   state = REST;
-  checkmarks = 0;
+  completed_tasks = 0;
 }
 
