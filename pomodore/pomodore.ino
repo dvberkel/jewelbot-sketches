@@ -16,6 +16,8 @@ unsigned checkmarks;
 unsigned long start_time;
 
 LED led;
+Timer timer;
+Buzzer buzzer;
 
 
 void setup() {
@@ -48,19 +50,20 @@ void pomodore(void) {
 
 void handle_rest(void) {
   // Wait for a button press
-  led.turn_off_all();
 }
 
 void handle_task(void) {
-  unsigned long now = millis();
+  unsigned long now = timer.runtime_ms();
   if ((now - start_time) > TASK_TIME) {
     start_time = now;
     checkmarks += 1;
     if (checkmarks == 4) {
       state = LONG_BREAK;
+      buzzer.long_buzz();
       checkmarks = 0;
     } else {
       state = BREAK;
+      buzzer.short_buzz();
     }
   } else {
     led.turn_off_all();
@@ -68,7 +71,7 @@ void handle_task(void) {
 }
 
 void handle_break(void) {
-  unsigned long now = millis();
+  unsigned long now = timer.runtime_ms();
   if ((now - start_time) > BREAK_TIME) {
     start_time = now;
     state = TASK;
@@ -78,7 +81,7 @@ void handle_break(void) {
 }
 
 void handle_long_break(void) {
-  unsigned long now = millis();
+  unsigned long now = timer.runtime_ms();
   if ((now - start_time) > LONG_BREAK_TIME) {
     start_time = now;
     state = TASK;
@@ -90,7 +93,7 @@ void handle_long_break(void) {
 void button_press(void) {
   if (state == REST) {
     state = TASK;
-    start_time = millis();
+    start_time = timer.runtime_ms();
   } else {
     // Do nothing
   }
