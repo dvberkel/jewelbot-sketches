@@ -79,6 +79,7 @@ void handle_break(void) {
   if ((now - start_time) > BREAK_TIME) {
     start_time = now;
     state = TASK;
+    buzzer.short_buzz();
   } else {
     led.turn_on_all(BREAK_COLOR);
   }
@@ -89,6 +90,7 @@ void handle_long_break(void) {
   if ((now - start_time) > LONG_BREAK_TIME) {
     start_time = now;
     state = TASK;
+    buzzer.long_buzz();
   } else {
     led.turn_on_all(LONG_BREAK_COLOR);
   }
